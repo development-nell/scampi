@@ -1,5 +1,7 @@
 from setuptools import setup
 
+
+
 setup(
     name='scampi',
     version='',
@@ -8,5 +10,10 @@ setup(
     license='',
     author='eleanor',
     author_email='',
-    description=''
+    description='',
+    install_requires=
+        [
+            'mysqlclient',
+            'django-mysql'
+        ]
 )
