@@ -3,9 +3,11 @@ from .models import Component,Product,ProductOption,ProductOptionComponent
 #DataFlair
 
 class ComponentForm(forms.ModelForm):
+
     class Meta:
         model = Component
         fields = '__all__'
+
 class ProducttForm(forms.ModelForm):
     options = forms.ModelChoiceField(queryset=None)
     ass = forms.CharField(max_length=64,empty_value="poop",label="Hey Now")
