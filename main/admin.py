@@ -13,6 +13,7 @@ class ProductOptionComponentsInline(admin.StackedInline):
     model = ProductOptionComponent
     extra = 0
 
+@admin.register(ProductOption)
 class ProductOptionAdmin(admin.ModelAdmin):
     list_display = ['label','produced']
     fields=['name','product','adjustment','produced']
@@ -27,7 +28,7 @@ class ProductOptionsInline(admin.StackedInline):
     model = ProductOption
     extra = 0
 
-
+@admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     fields = ['name','unit_price','options','options_link']
    # inlines = [ProductOptionsInline]
@@ -64,10 +65,23 @@ class LowInventoryFilter(SimpleListFilter):
         else:
             return queryset
         #     return queryset.filter().exclude(user__email__regex=self.SOCIAL_EMAIL_REGEX)
+class CategoryFilter(SimpleListFilter):
+    title = "Category"
+    parameter_name = 'cat'
+    def lookups(self, request, model_admin):
+        return list(map(lambda x: (x.id,x.name),ComponentCategory.objects.all()))
 
+    def queryset(self, request, queryset):
+        if not self.value():
+            return queryset
+        else:
+            return queryset.filter(category_id=self.value())
+
+
+@admin.register(Component)
 class ComponentAdmin(admin.ModelAdmin):
     fields = ['name','category','unit','thumbnail','unit_price','in_stock','unit_threshold']
-    list_filter = [LowInventoryFilter]
+    list_filter = [LowInventoryFilter,CategoryFilter]
     list_display = ['displayname','in_stock','shortfall']
     def displayname(self,instance):
         return '{}'.format(instance.__str__())
@@ -77,11 +91,11 @@ class ComponentAdmin(admin.ModelAdmin):
 
     displayname.short_description="Name"
 
-
+@admin.register(ComponentCategory)
 class ComponentCategoryAdmin(admin.ModelAdmin):
     fields = ['name']
 
-
+@admin.register(ProductionQueue)
 class ProductionQueueAdmin(admin.ModelAdmin):
     list_display = ['displayname','units']
     def displayname(self,instance):
@@ -90,9 +104,4 @@ class ProductionQueueAdmin(admin.ModelAdmin):
     def get_ordering(self,request):
        return ['-units']
 
-admin.site.register(Product,ProductAdmin)
-admin.site.register(Component,ComponentAdmin)
-admin.site.register(ProductOption,ProductOptionAdmin)
-admin.site.register(ProductOptionComponent)
-admin.site.register(ComponentCategory,ComponentCategoryAdmin)
-admin.site.register(ProductionQueue,ProductionQueueAdmin)
+
